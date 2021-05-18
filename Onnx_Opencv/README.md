@@ -14,3 +14,4 @@ auto net = dnn::readNetFromONNX("resnet50.onnx");
 net.setPreferableBackend(cv::dnn::DNN_BACKEND_CUDA);
 net.setPreferableTarget(cv::dnn::DNN_TARGET_CUDA);
 ```
+![img](https://github.com/jjw-DL/Model_Deployment/blob/master/Onnx_Opencv/result.jpg)
