@@ -6,15 +6,18 @@
 
 ```python
 from setuptools import setup
-from torch.utils import cpp_extension
+from torch.utils.cpp_extension import BuildExtension, CUDAExtension
 
 setup(
-    name='ncrelu_cpp',  # 编译后的链接库名称
-    ext_modules=[cpp_extension.CppExtension(
-        'ncrelu_cpp',['ncrelu.cpp']  # 待编译文件，及编译函数
-    )],
-    cmdclass={  # 执行编译命令设置
-        'build_ext':cpp_extension.BuildExtension
+    name='ncrelu_cuda',
+    ext_modules=[
+        CUDAExtension('ncrelu_cuda', [
+            'ncrelu_cuda.cpp', 
+            'ncrelu_cuda_kernel.cu',             # 需要包含.cpp和.cu文件
+        ]),
+    ],
+    cmdclass={
+        'build_ext': BuildExtension
     }
 )
 ```
