@@ -6,19 +6,17 @@
 
 ```python
 from setuptools import setup
-from torch.utils.cpp_extension import BuildExtension, CUDAExtension
+from torch.utils import cpp_extension
 
 setup(
-    name='ncrelu_cuda',
-    ext_modules=[
-        CUDAExtension('ncrelu_cuda', [
-            'ncrelu_cuda.cpp', 
-            'ncrelu_cuda_kernel.cu',             # 需要包含.cpp和.cu文件
-        ]),
-    ],
-    cmdclass={
-        'build_ext': BuildExtension
-    })
+    name='ncrelu_cpp',  # 编译后的链接库名称
+    ext_modules=[cpp_extension.CppExtension(
+        'ncrelu_cpp',['ncrelu.cpp']  # 待编译文件，及编译函数
+    )],
+    cmdclass={  # 执行编译命令设置
+        'build_ext':cpp_extension.BuildExtension
+    }
+)
 ```
 
 我们现在使用`CUDAExtension()`而不是`CppExtension()`。我们可以只指定`.cu`文件和`.cpp`文件——库可以解决所有麻烦。JIT 机制则更简单：
@@ -58,7 +56,7 @@ at::Tensor NCReLUForwardLauncher(const at::Tensor& src,
 } while (0)
 #define CHECK_INPUT(x) CHECK_CUDA(x);CHECK_CONTIGUOUS(x)
 
-// C++函数包装,最后编译出的动态链接库可调用的函数名s
+// C++函数包装,最后编译出的动态链接库可调用的函数名
 at::Tensor ncrelu_forward_cuda(const at::Tensor input) {
   CHECK_INPUT(input);
   at::DeviceGuard guard(input.device());	
